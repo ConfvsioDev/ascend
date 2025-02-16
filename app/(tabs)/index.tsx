@@ -1,74 +1,201 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, useColorScheme, ScrollView } from 'react-native';
+import { colors, typography, spacing, borderRadius } from '../theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated from 'react-native-reanimated';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function Dashboard() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
-export default function HomeScreen() {
+  const peakPerformanceScore = 85;
+  const recoveryStatus = 'Optimal';
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ScrollView 
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? colors.darkBackground : colors.background }
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={styles.header}>
+        <Text style={[
+          typography.heading,
+          { color: isDark ? colors.darkText : colors.text }
+        ]}>
+          Dashboard
+        </Text>
+      </View>
+
+      <LinearGradient
+        colors={[colors.primary, colors.secondary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.performanceCard}
+      >
+        <Text style={[typography.subheading, styles.whiteText]}>
+          Peak Performance Score
+        </Text>
+        <Text style={[typography.heading, styles.scoreText]}>
+          {peakPerformanceScore}
+        </Text>
+        <Text style={[typography.body, styles.whiteText]}>
+          Recovery Status: {recoveryStatus}
+        </Text>
+      </LinearGradient>
+
+      <View style={styles.metricsGrid}>
+        <View style={[
+          styles.metricCard,
+          { backgroundColor: isDark ? colors.darkCard : colors.card }
+        ]}>
+          <Text style={[
+            typography.caption,
+            { color: isDark ? colors.darkText : colors.text }
+          ]}>
+            Strength
+          </Text>
+          <Text style={[
+            typography.subheading,
+            { color: colors.strength }
+          ]}>
+            +12%
+          </Text>
+        </View>
+
+        <View style={[
+          styles.metricCard,
+          { backgroundColor: isDark ? colors.darkCard : colors.card }
+        ]}>
+          <Text style={[
+            typography.caption,
+            { color: isDark ? colors.darkText : colors.text }
+          ]}>
+            Explosiveness
+          </Text>
+          <Text style={[
+            typography.subheading,
+            { color: colors.explosive }
+          ]}>
+            +8%
+          </Text>
+        </View>
+
+        <View style={[
+          styles.metricCard,
+          { backgroundColor: isDark ? colors.darkCard : colors.card }
+        ]}>
+          <Text style={[
+            typography.caption,
+            { color: isDark ? colors.darkText : colors.text }
+          ]}>
+            Endurance
+          </Text>
+          <Text style={[
+            typography.subheading,
+            { color: colors.endurance }
+          ]}>
+            +15%
+          </Text>
+        </View>
+
+        <View style={[
+          styles.metricCard,
+          { backgroundColor: isDark ? colors.darkCard : colors.card }
+        ]}>
+          <Text style={[
+            typography.caption,
+            { color: isDark ? colors.darkText : colors.text }
+          ]}>
+            Mobility
+          </Text>
+          <Text style={[
+            typography.subheading,
+            { color: colors.mobility }
+          ]}>
+            +5%
+          </Text>
+        </View>
+      </View>
+
+      <View style={[
+        styles.nextWorkoutCard,
+        { backgroundColor: isDark ? colors.darkCard : colors.card }
+      ]}>
+        <Text style={[
+          typography.subheading,
+          { color: isDark ? colors.darkText : colors.text }
+        ]}>
+          Next Workout
+        </Text>
+        <Text style={[
+          typography.body,
+          { color: isDark ? colors.darkText : colors.text }
+        ]}>
+          Explosive Strength Training
+        </Text>
+        <Text style={[
+          typography.caption,
+          { color: isDark ? colors.darkText : colors.text }
+        ]}>
+          Today • 5:00 PM
+        </Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  header: {
+    padding: spacing.lg,
+    paddingTop: spacing.xl + spacing.lg,
+  },
+  performanceCard: {
+    margin: spacing.md,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  whiteText: {
+    color: colors.card,
+  },
+  scoreText: {
+    color: colors.card,
+    fontSize: 48,
+    marginVertical: spacing.sm,
+  },
+  metricsGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    flexWrap: 'wrap',
+    padding: spacing.md,
+    gap: spacing.md,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  metricCard: {
+    flex: 1,
+    minWidth: '45%',
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  nextWorkoutCard: {
+    margin: spacing.md,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
   },
 });

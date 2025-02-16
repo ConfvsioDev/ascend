@@ -1,39 +1,63 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { useColorScheme } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Onboarding } from '../components/Onboarding';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+declare global {
+  interface Window {
+    frameworkReady?: () => void;
+  }
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    async function prepare() {
+      try {
+        // Check if it's the first launch
+        const hasLaunched = await AsyncStorage.getItem('hasLaunched');
+        setIsFirstLaunch(hasLaunched === null);
+        
+        // Artificially delay for a smoother splash screen
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        setIsReady(true);
+        await SplashScreen.hideAsync();
+      } catch (e) {
+        console.warn(e);
+      }
     }
-  }, [loaded]);
 
-  if (!loaded) {
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    window.frameworkReady?.();
+  }, []);
+
+  if (!isReady || isFirstLaunch === null) {
     return null;
   }
 
+  if (isFirstLaunch) {
+    return <Onboarding onComplete={() => setIsFirstLaunch(false)} />;
+  }
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+    </>
   );
 }
